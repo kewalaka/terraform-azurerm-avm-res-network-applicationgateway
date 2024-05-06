@@ -54,7 +54,7 @@ resource "azurerm_subnet" "this" {
 }
 
 resource "azurerm_public_ip" "this" {
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static"
   location            = azurerm_resource_group.this.location
   name                = module.naming.public_ip.name_unique
   resource_group_name = azurerm_resource_group.this.name
