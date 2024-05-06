@@ -1,11 +1,12 @@
+variable "location" {
+  type        = string
+  description = "Azure region where the resource should be deployed."
+  nullable    = false
+}
+
 variable "name" {
   type        = string
   description = "The name of the this resource."
-
-  # validation {
-  #   condition     = can(regex("^[a-z0-9]{5,50}$", var.name))
-  #   error_message = "The name must be between 5 and 50 characters long and can only contain lowercase letters and numbers."
-  # }
 }
 
 # This is required for most resource modules
@@ -92,12 +93,6 @@ If it is set to false, then no telemetry will be collected.
 DESCRIPTION
 }
 
-variable "location" {
-  type        = string
-  nullable    = false
-  description = "Azure region where the resource should be deployed."
-}
-
 variable "lock" {
   type = object({
     kind = string
@@ -158,7 +153,6 @@ A map of role assignments to create on this resource. The map key is deliberatel
 DESCRIPTION
   nullable    = false
 }
-
 
 # tflint-ignore: terraform_unused_declarations
 variable "tags" {

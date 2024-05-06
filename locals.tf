@@ -1,5 +1,4 @@
 locals {
-
   managed_identities = {
     system_assigned_user_assigned = (var.managed_identities.system_assigned || length(var.managed_identities.user_assigned_resource_ids) > 0) ? {
       this = {
@@ -19,7 +18,5 @@ locals {
       }
     } : {}
   }
-
   role_definition_resource_substring = "/providers/Microsoft.Authorization/roleDefinitions"
-
 }

@@ -148,8 +148,8 @@ resource "azurerm_application_gateway" "this" {
   dynamic "identity" {
     for_each = local.managed_identities.user_assigned
     content {
-      type         = identity.value.type
       identity_ids = identity.value.user_assigned_resource_ids
+      type         = identity.value.type
     }
   }
   dynamic "private_link_configuration" {
