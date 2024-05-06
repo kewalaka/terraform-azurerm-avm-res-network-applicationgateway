@@ -58,6 +58,7 @@ resource "azurerm_public_ip" "this" {
   location            = azurerm_resource_group.this.location
   name                = module.naming.public_ip.name_unique
   resource_group_name = azurerm_resource_group.this.name
+  sku                 = "Standard"
 }
 
 # since these variables are re-used - a locals block makes this more maintainable
