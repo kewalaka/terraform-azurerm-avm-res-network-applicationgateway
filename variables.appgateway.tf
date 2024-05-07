@@ -1,5 +1,5 @@
 variable "backend_address_pool" {
-  type = set(object({
+  type = map(object({
     fqdns        = optional(set(string))
     ip_addresses = optional(set(string))
     name         = string
@@ -13,7 +13,7 @@ EOT
 }
 
 variable "backend_http_settings" {
-  type = set(object({
+  type = map(object({
     affinity_cookie_name                = optional(string)
     cookie_based_affinity               = string
     host_name                           = optional(string)
@@ -59,7 +59,7 @@ EOT
 }
 
 variable "frontend_ip_configuration" {
-  type = list(object({
+  type = map(object({
     name                            = string
     private_ip_address              = optional(string)
     private_ip_address_allocation   = optional(string)
@@ -79,7 +79,7 @@ EOT
 }
 
 variable "frontend_port" {
-  type = set(object({
+  type = map(object({
     name = string
     port = number
   }))
@@ -91,7 +91,7 @@ EOT
 }
 
 variable "gateway_ip_configuration" {
-  type = list(object({
+  type = map(object({
     name      = string
     subnet_id = string
   }))
@@ -103,7 +103,7 @@ EOT
 }
 
 variable "http_listener" {
-  type = set(object({
+  type = map(object({
     firewall_policy_id             = optional(string)
     frontend_ip_configuration_name = string
     frontend_port_name             = string
@@ -140,7 +140,7 @@ EOT
 }
 
 variable "request_routing_rule" {
-  type = set(object({
+  type = map(object({
     backend_address_pool_name   = optional(string)
     backend_http_settings_name  = optional(string)
     http_listener_name          = string
@@ -180,7 +180,7 @@ EOT
 }
 
 variable "authentication_certificate" {
-  type = list(object({
+  type = map(object({
     data = string
     name = string
   }))
@@ -204,7 +204,7 @@ EOT
 }
 
 variable "custom_error_configuration" {
-  type = list(object({
+  type = map(object({
     custom_error_page_url = string
     status_code           = string
   }))
@@ -277,7 +277,7 @@ EOT
 }
 
 variable "probe" {
-  type = set(object({
+  type = map(object({
     host                                      = optional(string)
     interval                                  = number
     minimum_servers                           = optional(number)
@@ -314,7 +314,7 @@ EOT
 }
 
 variable "redirect_configuration" {
-  type = set(object({
+  type = map(object({
     include_path         = optional(bool)
     include_query_string = optional(bool)
     name                 = string
@@ -334,7 +334,7 @@ EOT
 }
 
 variable "rewrite_rule_set" {
-  type = list(object({
+  type = map(object({
     name = string
     rewrite_rule = optional(list(object({
       name          = string
@@ -397,7 +397,7 @@ EOT
 }
 
 variable "ssl_certificate" {
-  type = set(object({
+  type = map(object({
     data                = optional(string)
     key_vault_secret_id = optional(string)
     name                = string
@@ -431,7 +431,7 @@ EOT
 }
 
 variable "ssl_profile" {
-  type = list(object({
+  type = map(object({
     name                                 = string
     trusted_client_certificate_names     = optional(list(string))
     verify_client_cert_issuer_dn         = optional(bool)
@@ -478,7 +478,7 @@ EOT
 }
 
 variable "trusted_client_certificate" {
-  type = list(object({
+  type = map(object({
     data = string
     name = string
   }))
@@ -490,7 +490,7 @@ EOT
 }
 
 variable "trusted_root_certificate" {
-  type = list(object({
+  type = map(object({
     data                = optional(string)
     key_vault_secret_id = optional(string)
     name                = string
@@ -504,7 +504,7 @@ EOT
 }
 
 variable "url_path_map" {
-  type = list(object({
+  type = map(object({
     default_backend_address_pool_name   = optional(string)
     default_backend_http_settings_name  = optional(string)
     default_redirect_configuration_name = optional(string)

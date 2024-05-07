@@ -10,7 +10,7 @@ resource "azurerm_application_gateway" "this" {
   zones                             = var.zones
 
   dynamic "backend_address_pool" {
-    for_each = var.backend_address_pool == null ? [] : var.backend_address_pool
+    for_each = var.backend_address_pool
     content {
       name         = backend_address_pool.value.name
       fqdns        = backend_address_pool.value.fqdns
@@ -18,7 +18,7 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "backend_http_settings" {
-    for_each = var.backend_http_settings == null ? [] : var.backend_http_settings
+    for_each = var.backend_http_settings
     content {
       cookie_based_affinity               = backend_http_settings.value.cookie_based_affinity
       name                                = backend_http_settings.value.name
@@ -59,7 +59,7 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "frontend_port" {
-    for_each = var.frontend_port == null ? [] : var.frontend_port
+    for_each = var.frontend_port
     content {
       name = frontend_port.value.name
       port = frontend_port.value.port
@@ -73,7 +73,7 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "http_listener" {
-    for_each = var.http_listener == null ? [] : var.http_listener
+    for_each = var.http_listener
     content {
       frontend_ip_configuration_name = http_listener.value.frontend_ip_configuration_name
       frontend_port_name             = http_listener.value.frontend_port_name
@@ -96,7 +96,7 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "request_routing_rule" {
-    for_each = var.request_routing_rule == null ? [] : var.request_routing_rule
+    for_each = var.request_routing_rule
     content {
       http_listener_name          = request_routing_rule.value.http_listener_name
       name                        = request_routing_rule.value.name
@@ -118,21 +118,21 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "authentication_certificate" {
-    for_each = var.authentication_certificate == null ? [] : var.authentication_certificate
+    for_each = var.authentication_certificate == null ? {} : var.authentication_certificate
     content {
       data = authentication_certificate.value.data
       name = authentication_certificate.value.name
     }
   }
   dynamic "autoscale_configuration" {
-    for_each = var.autoscale_configuration == null ? [] : [var.autoscale_configuration]
+    for_each = var.autoscale_configuration == null ? {} : var.autoscale_configuration
     content {
       min_capacity = autoscale_configuration.value.min_capacity
       max_capacity = autoscale_configuration.value.max_capacity
     }
   }
   dynamic "custom_error_configuration" {
-    for_each = var.custom_error_configuration == null ? [] : var.custom_error_configuration
+    for_each = var.custom_error_configuration == null ? {} : var.custom_error_configuration
     content {
       custom_error_page_url = custom_error_configuration.value.custom_error_page_url
       status_code           = custom_error_configuration.value.status_code
@@ -170,7 +170,7 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "probe" {
-    for_each = var.probe == null ? [] : var.probe
+    for_each = var.probe == null ? {} : var.probe
     content {
       interval                                  = probe.value.interval
       name                                      = probe.value.name
@@ -193,7 +193,7 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "redirect_configuration" {
-    for_each = var.redirect_configuration == null ? [] : var.redirect_configuration
+    for_each = var.redirect_configuration == null ? {} : var.redirect_configuration
     content {
       name                 = redirect_configuration.value.name
       redirect_type        = redirect_configuration.value.redirect_type
@@ -204,7 +204,7 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "rewrite_rule_set" {
-    for_each = var.rewrite_rule_set == null ? [] : var.rewrite_rule_set
+    for_each = var.rewrite_rule_set == null ? {} : var.rewrite_rule_set
     content {
       name = rewrite_rule_set.value.name
 
@@ -251,7 +251,7 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "ssl_certificate" {
-    for_each = var.ssl_certificate == null ? [] : var.ssl_certificate
+    for_each = var.ssl_certificate == null ? {} : var.ssl_certificate
     content {
       name                = ssl_certificate.value.name
       data                = ssl_certificate.value.data
@@ -270,7 +270,7 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "ssl_profile" {
-    for_each = var.ssl_profile == null ? [] : var.ssl_profile
+    for_each = var.ssl_profile == null ? {} : var.ssl_profile
     content {
       name                                 = ssl_profile.value.name
       trusted_client_certificate_names     = ssl_profile.value.trusted_client_certificate_names
@@ -299,14 +299,14 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "trusted_client_certificate" {
-    for_each = var.trusted_client_certificate == null ? [] : var.trusted_client_certificate
+    for_each = var.trusted_client_certificate == null ? {} : var.trusted_client_certificate
     content {
       data = trusted_client_certificate.value.data
       name = trusted_client_certificate.value.name
     }
   }
   dynamic "trusted_root_certificate" {
-    for_each = var.trusted_root_certificate == null ? [] : var.trusted_root_certificate
+    for_each = var.trusted_root_certificate == null ? {} : var.trusted_root_certificate
     content {
       name                = trusted_root_certificate.value.name
       data                = trusted_root_certificate.value.data
@@ -314,7 +314,7 @@ resource "azurerm_application_gateway" "this" {
     }
   }
   dynamic "url_path_map" {
-    for_each = var.url_path_map == null ? [] : var.url_path_map
+    for_each = var.url_path_map == null ? {} : var.url_path_map
     content {
       name                                = url_path_map.value.name
       default_backend_address_pool_name   = url_path_map.value.default_backend_address_pool_name
