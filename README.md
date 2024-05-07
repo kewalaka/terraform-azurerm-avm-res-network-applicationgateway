@@ -46,7 +46,7 @@ Description: - `fqdns` - (Optional) A list of FQDN's which should be part of the
 Type:
 
 ```hcl
-set(object({
+map(object({
     fqdns        = optional(set(string))
     ip_addresses = optional(set(string))
     name         = string
@@ -79,7 +79,7 @@ Description: - `affinity_cookie_name` - (Optional) The name of the affinity cook
 Type:
 
 ```hcl
-set(object({
+map(object({
     affinity_cookie_name                = optional(string)
     cookie_based_affinity               = string
     host_name                           = optional(string)
@@ -113,7 +113,7 @@ Description: - `name` - (Required) The name of the Frontend IP Configuration.
 Type:
 
 ```hcl
-list(object({
+map(object({
     name                            = string
     private_ip_address              = optional(string)
     private_ip_address_allocation   = optional(string)
@@ -131,7 +131,7 @@ Description: - `name` - (Required) The name of the Frontend Port.
 Type:
 
 ```hcl
-set(object({
+map(object({
     name = string
     port = number
   }))
@@ -145,7 +145,7 @@ Description: - `name` - (Required) The Name of this Gateway IP Configuration.
 Type:
 
 ```hcl
-list(object({
+map(object({
     name      = string
     subnet_id = string
   }))
@@ -172,7 +172,7 @@ Description: - `firewall_policy_id` - (Optional) The ID of the Web Application F
 Type:
 
 ```hcl
-set(object({
+map(object({
     firewall_policy_id             = optional(string)
     frontend_ip_configuration_name = string
     frontend_port_name             = string
@@ -217,7 +217,7 @@ Description: - `backend_address_pool_name` - (Optional) The Name of the Backend 
 Type:
 
 ```hcl
-set(object({
+map(object({
     backend_address_pool_name   = optional(string)
     backend_http_settings_name  = optional(string)
     http_listener_name          = string
@@ -264,7 +264,7 @@ Description: - `data` - (Required) The contents of the Authentication Certificat
 Type:
 
 ```hcl
-list(object({
+map(object({
     data = string
     name = string
   }))
@@ -296,7 +296,7 @@ Description: - `custom_error_page_url` - (Required) Error page URL of the applic
 Type:
 
 ```hcl
-list(object({
+map(object({
     custom_error_page_url = string
     status_code           = string
   }))
@@ -506,7 +506,7 @@ Description: - `host` - (Optional) The Hostname used for this Probe. If the Appl
 Type:
 
 ```hcl
-set(object({
+map(object({
     host                                      = optional(string)
     interval                                  = number
     minimum_servers                           = optional(number)
@@ -538,7 +538,7 @@ Description: - `include_path` - (Optional) Whether to include the path in the re
 Type:
 
 ```hcl
-set(object({
+map(object({
     include_path         = optional(bool)
     include_query_string = optional(bool)
     name                 = string
@@ -586,7 +586,7 @@ Description: - `name` - (Required) Unique name of the rewrite rule set block
 Type:
 
 ```hcl
-list(object({
+map(object({
     name = string
     rewrite_rule = optional(list(object({
       name          = string
@@ -656,7 +656,7 @@ Description: - `data` - (Optional) The base64-encoded PFX certificate data. Requ
 Type:
 
 ```hcl
-set(object({
+map(object({
     data                = optional(string)
     key_vault_secret_id = optional(string)
     name                = string
@@ -706,7 +706,7 @@ Description: - `name` - (Required) The name of the SSL Profile that is unique wi
 Type:
 
 ```hcl
-list(object({
+map(object({
     name                                 = string
     trusted_client_certificate_names     = optional(list(string))
     verify_client_cert_issuer_dn         = optional(bool)
@@ -759,7 +759,7 @@ Description: - `data` - (Required) The base-64 encoded certificate.
 Type:
 
 ```hcl
-list(object({
+map(object({
     data = string
     name = string
   }))
@@ -776,7 +776,7 @@ Description: - `data` - (Optional) The contents of the Trusted Root Certificate 
 Type:
 
 ```hcl
-list(object({
+map(object({
     data                = optional(string)
     key_vault_secret_id = optional(string)
     name                = string
@@ -806,7 +806,7 @@ Description: - `default_backend_address_pool_name` - (Optional) The Name of the 
 Type:
 
 ```hcl
-list(object({
+map(object({
     default_backend_address_pool_name   = optional(string)
     default_backend_http_settings_name  = optional(string)
     default_redirect_configuration_name = optional(string)
