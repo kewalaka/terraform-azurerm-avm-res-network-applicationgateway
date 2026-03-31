@@ -363,9 +363,9 @@ locals {
         }
       }]
       sslPolicy = var.ssl_policy == null ? null : {
-        cipherSuites         = var.ssl_policy.cipher_suites == null ? null : [for item in var.ssl_policy.cipher_suites : item]
-        disabledSslProtocols = var.ssl_policy.disabled_ssl_protocols == null ? null : [for item in var.ssl_policy.disabled_ssl_protocols : item]
-        minProtocolVersion   = var.ssl_policy.min_protocol_version
+        cipherSuites         = var.ssl_policy.policy_type == "Predefined" ? null : (var.ssl_policy.cipher_suites == null ? null : [for item in var.ssl_policy.cipher_suites : item])
+        disabledSslProtocols = var.ssl_policy.policy_type == "Predefined" ? null : (var.ssl_policy.disabled_ssl_protocols == null ? null : [for item in var.ssl_policy.disabled_ssl_protocols : item])
+        minProtocolVersion   = var.ssl_policy.policy_type == "Predefined" ? null : var.ssl_policy.min_protocol_version
         policyName           = var.ssl_policy.policy_name
         policyType           = var.ssl_policy.policy_type
       }
@@ -378,9 +378,9 @@ locals {
             verifyClientRevocation   = item.properties.client_auth_configuration.verify_client_revocation
           }
           sslPolicy = item.properties.ssl_policy == null ? null : {
-            cipherSuites         = item.properties.ssl_policy.cipher_suites == null ? null : [for item in item.properties.ssl_policy.cipher_suites : item]
-            disabledSslProtocols = item.properties.ssl_policy.disabled_ssl_protocols == null ? null : [for item in item.properties.ssl_policy.disabled_ssl_protocols : item]
-            minProtocolVersion   = item.properties.ssl_policy.min_protocol_version
+            cipherSuites         = item.properties.ssl_policy.policy_type == "Predefined" ? null : (item.properties.ssl_policy.cipher_suites == null ? null : [for s in item.properties.ssl_policy.cipher_suites : s])
+            disabledSslProtocols = item.properties.ssl_policy.policy_type == "Predefined" ? null : (item.properties.ssl_policy.disabled_ssl_protocols == null ? null : [for s in item.properties.ssl_policy.disabled_ssl_protocols : s])
+            minProtocolVersion   = item.properties.ssl_policy.policy_type == "Predefined" ? null : item.properties.ssl_policy.min_protocol_version
             policyName           = item.properties.ssl_policy.policy_name
             policyType           = item.properties.ssl_policy.policy_type
           }
