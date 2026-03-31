@@ -221,6 +221,11 @@ module "application_gateway" {
       }
     }
   ]
+  sku = {
+    name     = "Standard_v2"
+    tier     = "Standard_v2"
+    capacity = 0
+  }
   tags = {
     environment = "dev"
     owner       = "application_gateway"
