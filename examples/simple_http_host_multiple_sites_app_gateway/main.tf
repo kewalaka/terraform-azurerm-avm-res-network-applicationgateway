@@ -9,7 +9,7 @@ terraform {
   required_providers {
     azapi = {
       source  = "Azure/azapi"
-      version = "~> 2.7"
+      version = "~> 2.9"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -55,6 +55,14 @@ locals {
 module "application_gateway" {
   source = "../../"
 
+  location = azurerm_resource_group.rg_group.location
+  # provide Application gateway name
+  name      = module.naming.application_gateway.name_unique
+  parent_id = azurerm_resource_group.rg_group.id
+  autoscale_configuration = {
+    min_capacity = 2
+    max_capacity = 3
+  }
   # Backend address pool configuration for the application gateway
   # Mandatory Input
   backend_address_pools = [
@@ -85,6 +93,26 @@ module "application_gateway" {
       }
     }
   ]
+  diagnostic_settings = {
+    example_setting = {
+      name                           = "${module.naming.application_gateway.name_unique}-diagnostic-setting"
+      workspace_resource_id          = azurerm_log_analytics_workspace.log_analytics_workspace.id
+      log_analytics_destination_type = "Dedicated" # Or "AzureDiagnostics"
+      log_groups                     = ["allLogs"]
+      metric_categories              = ["AllMetrics"]
+    }
+  }
+  enable_telemetry = var.enable_telemetry
+  frontend_ip_configurations = [
+    {
+      name = "appGatewayFrontendPublicIP"
+      properties = {
+        public_ip_address = {
+          id = azurerm_public_ip.pip.id
+        }
+      }
+    }
+  ]
   # Frontend port configuration for the application gateway
   # Mandatory Input
   # WAF : This example NO HTTPS, We recommend to  Secure all incoming connections using HTTPS for production services with end-to-end SSL/TLS or SSL/TLS termination at the Application Gateway to protect against attacks and ensure data remains private and encrypted between the web server and browsers.
@@ -100,16 +128,6 @@ module "application_gateway" {
       name = "port8080"
       properties = {
         port = 8080
-      }
-    }
-  ]
-  frontend_ip_configurations = [
-    {
-      name = "appGatewayFrontendPublicIP"
-      properties = {
-        public_ip_address = {
-          id = azurerm_public_ip.pip.id
-        }
       }
     }
   ]
@@ -165,9 +183,6 @@ module "application_gateway" {
       }
     }
   ]
-  location = azurerm_resource_group.rg_group.location
-  # provide Application gateway name
-  name = module.naming.application_gateway.name_unique
   # Routing rules configuration for the backend pool
   # Mandatory Input
   request_routing_rules = [
@@ -204,21 +219,6 @@ module "application_gateway" {
       }
     }
   ]
-  parent_id = azurerm_resource_group.rg_group.id
-  autoscale_configuration = {
-    min_capacity = 2
-    max_capacity = 3
-  }
-  diagnostic_settings = {
-    example_setting = {
-      name                           = "${module.naming.application_gateway.name_unique}-diagnostic-setting"
-      workspace_resource_id          = azurerm_log_analytics_workspace.log_analytics_workspace.id
-      log_analytics_destination_type = "Dedicated" # Or "AzureDiagnostics"
-      log_groups                     = ["allLogs"]
-      metric_categories              = ["AllMetrics"]
-    }
-  }
-  enable_telemetry = var.enable_telemetry
   # WAF : Azure Application Gateways v2 are always deployed in a highly available fashion with multiple instances by default. Enabling autoscale ensures the service is not reliant on manual intervention for scaling.
   sku = {
     # Accpected value for names Standard_v2 and WAF_v2

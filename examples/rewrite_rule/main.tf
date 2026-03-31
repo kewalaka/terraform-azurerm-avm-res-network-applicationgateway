@@ -12,7 +12,7 @@ terraform {
   required_providers {
     azapi = {
       source  = "Azure/azapi"
-      version = "~> 2.7"
+      version = "~> 2.9"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -58,6 +58,14 @@ locals {
 module "application_gateway" {
   source = "../../"
 
+  location = azurerm_resource_group.rg_group.location
+  # provide Application gateway name
+  name      = module.naming.application_gateway.name_unique
+  parent_id = azurerm_resource_group.rg_group.id
+  autoscale_configuration = {
+    min_capacity = 2
+    max_capacity = 3
+  }
   # Backend address pool configuration for the application gateway
   # Mandatory Input
   backend_address_pools = [
@@ -89,6 +97,16 @@ module "application_gateway" {
       }
     }
   ]
+  frontend_ip_configurations = [
+    {
+      name = "appGatewayFrontendPublicIP"
+      properties = {
+        public_ip_address = {
+          id = azurerm_public_ip.pip.id
+        }
+      }
+    }
+  ]
   # frontend port configuration block for the application gateway
   # WAF : This example NO HTTPS, We recommend to  Secure all incoming connections using HTTPS for production services with end-to-end SSL/TLS or SSL/TLS termination at the Application Gateway to protect against attacks and ensure data remains private and encrypted between the web server and browsers.
   # WAF : Please refer kv_selfssl_waf_https_app_gateway example for HTTPS configuration
@@ -97,16 +115,6 @@ module "application_gateway" {
       name = "frontend-port-80"
       properties = {
         port = 8080
-      }
-    }
-  ]
-  frontend_ip_configurations = [
-    {
-      name = "appGatewayFrontendPublicIP"
-      properties = {
-        public_ip_address = {
-          id = azurerm_public_ip.pip.id
-        }
       }
     }
   ]
@@ -136,9 +144,6 @@ module "application_gateway" {
       }
     }
   ]
-  location = azurerm_resource_group.rg_group.location
-  # provide Application gateway name
-  name = module.naming.application_gateway.name_unique
   # Routing rules configuration for the backend pool
   # Mandatory Input
   request_routing_rules = [
@@ -162,11 +167,6 @@ module "application_gateway" {
       }
     }
   ]
-  parent_id = azurerm_resource_group.rg_group.id
-  autoscale_configuration = {
-    min_capacity = 2
-    max_capacity = 3
-  }
   rewrite_rule_sets = [
     {
       name = "my-rewrite-rule-set"

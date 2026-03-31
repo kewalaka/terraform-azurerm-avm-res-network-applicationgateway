@@ -30,6 +30,11 @@ output "private_ip_test_subnet_name" {
   value       = azurerm_subnet.private_ip_test.name
 }
 
+output "public_ip_id" {
+  description = "ID of the Public IP"
+  value       = azurerm_public_ip.pip.id
+}
+
 # Output for Resource Group
 output "resource_group_id" {
   description = "ID of the Azure Resource Group"
@@ -62,9 +67,4 @@ output "workload_subnet_id" {
 output "workload_subnet_name" {
   description = "Name of the Workload Subnet"
   value       = azurerm_subnet.workload.name
-}
-
-output "public_ip_id" {
-  description = "ID of the Public IP"
-  value       = azurerm_public_ip.pip.id
 }

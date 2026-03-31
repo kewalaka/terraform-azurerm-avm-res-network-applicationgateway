@@ -11,7 +11,7 @@ terraform {
   required_providers {
     azapi = {
       source  = "Azure/azapi"
-      version = "~> 2.7"
+      version = "~> 2.9"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -57,6 +57,15 @@ locals {
 module "application_gateway" {
   source = "../../"
 
+  location = azurerm_resource_group.rg_group.location
+  # provide Application gateway name
+  name = module.naming.application_gateway.name_unique
+  # pre-requisites resources input required for the module
+  parent_id = azurerm_resource_group.rg_group.id
+  autoscale_configuration = {
+    min_capacity = 2
+    max_capacity = 3
+  }
   # Backend address pool configuration for the application gateway
   # Mandatory Input
   backend_address_pools = [
@@ -92,6 +101,17 @@ module "application_gateway" {
       }
     }
   ]
+  enable_telemetry = var.enable_telemetry
+  frontend_ip_configurations = [
+    {
+      name = "appGatewayFrontendPublicIP"
+      properties = {
+        public_ip_address = {
+          id = azurerm_public_ip.public_ip.id
+        }
+      }
+    }
+  ]
   # frontend port configuration block for the application gateway
   # WAF : This example NO HTTPS, We recommend to  Secure all incoming connections using HTTPS for production services with end-to-end SSL/TLS or SSL/TLS termination at the Application Gateway to protect against attacks and ensure data remains private and encrypted between the web server and browsers.
   # WAF : Please refer kv_selfssl_waf_https_app_gateway example for HTTPS configuration
@@ -100,16 +120,6 @@ module "application_gateway" {
       name = "frontend-port-80"
       properties = {
         port = 80
-      }
-    }
-  ]
-  frontend_ip_configurations = [
-    {
-      name = "appGatewayFrontendPublicIP"
-      properties = {
-        public_ip_address = {
-          id = azurerm_public_ip.public_ip.id
-        }
       }
     }
   ]
@@ -139,36 +149,6 @@ module "application_gateway" {
       }
     }
   ]
-  location = azurerm_resource_group.rg_group.location
-  # provide Application gateway name
-  name = module.naming.application_gateway.name_unique
-  # Routing rules configuration for the backend pool
-  # Mandatory Input
-  request_routing_rules = [
-    {
-      name = "rule-1"
-      properties = {
-        rule_type = "Basic"
-        http_listener = {
-          id = "${local.agw_id}/httpListeners/app-Gateway-Http-Listener"
-        }
-        backend_address_pool = {
-          id = "${local.agw_id}/backendAddressPools/app-Gateway-Backend-Pool"
-        }
-        backend_http_settings = {
-          id = "${local.agw_id}/backendHttpSettingsCollection/app-Gateway-Backend-Http-Settings"
-        }
-        priority = 100
-      }
-    }
-  ]
-  # pre-requisites resources input required for the module
-  parent_id = azurerm_resource_group.rg_group.id
-  autoscale_configuration = {
-    min_capacity = 2
-    max_capacity = 3
-  }
-  enable_telemetry = var.enable_telemetry
   # probe configurations for the application gateway
   # WAF : Use Health Probes to detect backend availability
   # # Optional Input
@@ -193,6 +173,26 @@ module "application_gateway" {
           body         = null
           status_codes = ["200-399"]
         }
+      }
+    }
+  ]
+  # Routing rules configuration for the backend pool
+  # Mandatory Input
+  request_routing_rules = [
+    {
+      name = "rule-1"
+      properties = {
+        rule_type = "Basic"
+        http_listener = {
+          id = "${local.agw_id}/httpListeners/app-Gateway-Http-Listener"
+        }
+        backend_address_pool = {
+          id = "${local.agw_id}/backendAddressPools/app-Gateway-Backend-Pool"
+        }
+        backend_http_settings = {
+          id = "${local.agw_id}/backendHttpSettingsCollection/app-Gateway-Backend-Http-Settings"
+        }
+        priority = 100
       }
     }
   ]

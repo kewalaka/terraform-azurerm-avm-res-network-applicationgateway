@@ -11,7 +11,7 @@ terraform {
   required_providers {
     azapi = {
       source  = "Azure/azapi"
-      version = "~> 2.7"
+      version = "~> 2.9"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -57,6 +57,14 @@ locals {
 module "application_gateway" {
   source = "../../"
 
+  location = azurerm_resource_group.rg_group.location
+  # provide Application gateway name
+  name      = module.naming.application_gateway.name_unique
+  parent_id = azurerm_resource_group.rg_group.id
+  autoscale_configuration = {
+    min_capacity = 2
+    max_capacity = 3
+  }
   # Backend address pool configuration for the application gateway
   # Mandatory Input
   backend_address_pools = [
@@ -82,14 +90,22 @@ module "application_gateway" {
       }
     }
   ]
-  frontend_ports = [
-    {
-      name = "frontend-port-443"
-      properties = {
-        port = 443
-      }
+  diagnostic_settings = {
+    example_setting = {
+      name                           = "${module.naming.application_gateway.name_unique}-diagnostic-setting"
+      workspace_resource_id          = azurerm_log_analytics_workspace.log_analytics_workspace.id
+      log_analytics_destination_type = "Dedicated" # Or "AzureDiagnostics"
+      log_groups                     = ["allLogs"]
+      metric_categories              = ["AllMetrics"]
     }
-  ]
+  }
+  enable_telemetry = var.enable_telemetry
+  # WAF : Use Application Gateway with Web Application Firewall (WAF) in an application virtual network to safeguard inbound HTTP/S internet traffic. WAF offers centralized defense against potential exploits through OWASP core rule sets-based rules.
+  # Ensure that you have a WAF policy created before enabling WAF on the Application Gateway
+  # The use of an external WAF policy is recommended rather than using the classic WAF via the waf_configuration block.
+  firewall_policy = {
+    id = azurerm_web_application_firewall_policy.azure_waf.id
+  }
   frontend_ip_configurations = [
     {
       name = "appGatewayFrontendPublicIP"
@@ -97,6 +113,14 @@ module "application_gateway" {
         public_ip_address = {
           id = azurerm_public_ip.pip.id
         }
+      }
+    }
+  ]
+  frontend_ports = [
+    {
+      name = "frontend-port-443"
+      properties = {
+        port = 443
       }
     }
   ]
@@ -129,50 +153,6 @@ module "application_gateway" {
       }
     }
   ]
-  location = azurerm_resource_group.rg_group.location
-  # provide Application gateway name
-  name = module.naming.application_gateway.name_unique
-  # Routing rules configuration for the backend pool
-  # Mandatory Input
-  request_routing_rules = [
-    {
-      name = "rule-1"
-      properties = {
-        rule_type = "Basic"
-        http_listener = {
-          id = "${local.agw_id}/httpListeners/appGatewayHttpListener"
-        }
-        backend_address_pool = {
-          id = "${local.agw_id}/backendAddressPools/appGatewayBackendPool"
-        }
-        backend_http_settings = {
-          id = "${local.agw_id}/backendHttpSettingsCollection/appGatewayBackendHttpSettings"
-        }
-        priority = 100
-      }
-    }
-  ]
-  parent_id = azurerm_resource_group.rg_group.id
-  # WAF : Use Application Gateway with Web Application Firewall (WAF) in an application virtual network to safeguard inbound HTTP/S internet traffic. WAF offers centralized defense against potential exploits through OWASP core rule sets-based rules.
-  # Ensure that you have a WAF policy created before enabling WAF on the Application Gateway
-  # The use of an external WAF policy is recommended rather than using the classic WAF via the waf_configuration block.
-  firewall_policy = {
-    id = azurerm_web_application_firewall_policy.azure_waf.id
-  }
-  autoscale_configuration = {
-    min_capacity = 2
-    max_capacity = 3
-  }
-  diagnostic_settings = {
-    example_setting = {
-      name                           = "${module.naming.application_gateway.name_unique}-diagnostic-setting"
-      workspace_resource_id          = azurerm_log_analytics_workspace.log_analytics_workspace.id
-      log_analytics_destination_type = "Dedicated" # Or "AzureDiagnostics"
-      log_groups                     = ["allLogs"]
-      metric_categories              = ["AllMetrics"]
-    }
-  }
-  enable_telemetry = var.enable_telemetry
   lock = {
     name = "lock-${module.naming.application_gateway.name_unique}"
     kind = "CanNotDelete"
@@ -192,6 +172,26 @@ module "application_gateway" {
         target_listener = {
           id = "${local.agw_id}/httpListeners/appGatewayHttpListener"
         }
+      }
+    }
+  ]
+  # Routing rules configuration for the backend pool
+  # Mandatory Input
+  request_routing_rules = [
+    {
+      name = "rule-1"
+      properties = {
+        rule_type = "Basic"
+        http_listener = {
+          id = "${local.agw_id}/httpListeners/appGatewayHttpListener"
+        }
+        backend_address_pool = {
+          id = "${local.agw_id}/backendAddressPools/appGatewayBackendPool"
+        }
+        backend_http_settings = {
+          id = "${local.agw_id}/backendHttpSettingsCollection/appGatewayBackendHttpSettings"
+        }
+        priority = 100
       }
     }
   ]

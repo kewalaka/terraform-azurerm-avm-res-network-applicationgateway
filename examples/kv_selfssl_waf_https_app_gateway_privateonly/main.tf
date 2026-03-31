@@ -11,7 +11,7 @@ terraform {
   required_providers {
     azapi = {
       source  = "Azure/azapi"
-      version = "~> 2.7"
+      version = "~> 2.9"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -58,6 +58,14 @@ locals {
 module "application_gateway" {
   source = "../../"
 
+  location = azurerm_resource_group.rg_group.location
+  # provide Application gateway name
+  name      = module.naming.application_gateway.name_unique
+  parent_id = azurerm_resource_group.rg_group.id
+  autoscale_configuration = {
+    min_capacity = 2
+    max_capacity = 3
+  }
   # Backend address pool configuration for the application gateway
   # Mandatory Input
   backend_address_pools = [
@@ -84,16 +92,13 @@ module "application_gateway" {
       }
     }
   ]
-  # frontend port configuration block for the application gateway
-  # WAF : Secure all incoming connections using HTTPS for production services with end-to-end SSL/TLS or SSL/TLS termination at the Application Gateway to protect against attacks and ensure data remains private and encrypted between the web server and browsers.
-  frontend_ports = [
-    {
-      name = "frontend-port-443"
-      properties = {
-        port = 443
-      }
-    }
-  ]
+  enable_telemetry = var.enable_telemetry
+  # WAF : Use Application Gateway with Web Application Firewall (WAF) in an application virtual network to safeguard inbound HTTP/S internet traffic. WAF offers centralized defense against potential exploits through OWASP core rule sets-based rules.
+  # Ensure that you have a WAF policy created before enabling WAF on the Application Gateway
+  # The use of an external WAF policy is recommended rather than using the classic WAF via the waf_configuration block.
+  firewall_policy = {
+    id = azurerm_web_application_firewall_policy.azure_waf.id
+  }
   frontend_ip_configurations = [
     {
       name = "private-ip-custom-name"
@@ -103,6 +108,16 @@ module "application_gateway" {
         subnet = {
           id = azurerm_subnet.private_ip_test.id
         }
+      }
+    }
+  ]
+  # frontend port configuration block for the application gateway
+  # WAF : Secure all incoming connections using HTTPS for production services with end-to-end SSL/TLS or SSL/TLS termination at the Application Gateway to protect against attacks and ensure data remains private and encrypted between the web server and browsers.
+  frontend_ports = [
+    {
+      name = "frontend-port-443"
+      properties = {
+        port = 443
       }
     }
   ]
@@ -138,9 +153,25 @@ module "application_gateway" {
       }
     }
   ]
-  location = azurerm_resource_group.rg_group.location
-  # provide Application gateway name
-  name = module.naming.application_gateway.name_unique
+  managed_identities = {
+    user_assigned_resource_ids = [
+      azurerm_user_assigned_identity.appag_umid.id
+    ]
+  }
+  # HTTP to HTTPS Redirection Configuration
+  redirect_configurations = [
+    {
+      name = "Redirect1"
+      properties = {
+        redirect_type        = "Permanent"
+        include_path         = true
+        include_query_string = true
+        target_listener = {
+          id = "${local.agw_id}/httpListeners/appGatewayHttpListener"
+        }
+      }
+    }
+  ]
   # Routing rules configuration for the backend pool
   # Mandatory Input
   request_routing_rules = [
@@ -158,37 +189,6 @@ module "application_gateway" {
           id = "${local.agw_id}/backendHttpSettingsCollection/appGatewayBackendHttpSettings"
         }
         priority = 100
-      }
-    }
-  ]
-  parent_id = azurerm_resource_group.rg_group.id
-  # WAF : Use Application Gateway with Web Application Firewall (WAF) in an application virtual network to safeguard inbound HTTP/S internet traffic. WAF offers centralized defense against potential exploits through OWASP core rule sets-based rules.
-  # Ensure that you have a WAF policy created before enabling WAF on the Application Gateway
-  # The use of an external WAF policy is recommended rather than using the classic WAF via the waf_configuration block.
-  firewall_policy = {
-    id = azurerm_web_application_firewall_policy.azure_waf.id
-  }
-  autoscale_configuration = {
-    min_capacity = 2
-    max_capacity = 3
-  }
-  enable_telemetry = var.enable_telemetry
-  managed_identities = {
-    user_assigned_resource_ids = [
-      azurerm_user_assigned_identity.appag_umid.id
-    ]
-  }
-  # HTTP to HTTPS Redirection Configuration
-  redirect_configurations = [
-    {
-      name = "Redirect1"
-      properties = {
-        redirect_type        = "Permanent"
-        include_path         = true
-        include_query_string = true
-        target_listener = {
-          id = "${local.agw_id}/httpListeners/appGatewayHttpListener"
-        }
       }
     }
   ]

@@ -1,11 +1,6 @@
-output "resource_id" {
-  description = "The ID of the created resource."
-  value       = azapi_resource.this.id
-}
-
-output "name" {
-  description = "The name of the created resource."
-  value       = azapi_resource.this.name
+output "default_predefined_ssl_policy" {
+  description = "Ssl predefined policy name enums."
+  value       = try(azapi_resource.this.output.properties.defaultPredefinedSslPolicy, null)
 }
 
 output "identity_principal_id" {
@@ -18,9 +13,9 @@ output "identity_tenant_id" {
   value       = try(azapi_resource.this.output.identity.tenantId, null)
 }
 
-output "default_predefined_ssl_policy" {
-  description = "Ssl predefined policy name enums."
-  value       = try(azapi_resource.this.output.properties.defaultPredefinedSslPolicy, null)
+output "name" {
+  description = "The name of the created resource."
+  value       = azapi_resource.this.name
 }
 
 output "operational_state" {
@@ -41,6 +36,11 @@ output "provisioning_state" {
 output "resource_guid" {
   description = "The resource GUID property of the application gateway resource."
   value       = try(azapi_resource.this.output.properties.resourceGuid, null)
+}
+
+output "resource_id" {
+  description = "The ID of the created resource."
+  value       = azapi_resource.this.id
 }
 
 output "type" {

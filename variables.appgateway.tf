@@ -1,46 +1,35 @@
 variable "parent_id" {
+  type        = string
   description = <<DESCRIPTION
 The parent resource ID for this resource.
 DESCRIPTION
-  type        = string
-}
-
-variable "id" {
-  description = <<DESCRIPTION
-Resource ID.
-DESCRIPTION
-  type        = string
-  default     = null
 }
 
 variable "authentication_certificates" {
-  description = <<DESCRIPTION
-Authentication certificates of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
       data = optional(string)
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Authentication certificates of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "autoscale_configuration" {
-  description = <<DESCRIPTION
-Application Gateway autoscale configuration.
-DESCRIPTION
   type = object({
     max_capacity = optional(number)
     min_capacity = number
   })
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Application Gateway autoscale configuration.
+DESCRIPTION
 }
 
 variable "backend_address_pools" {
-  description = <<DESCRIPTION
-Backend address pool of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -50,13 +39,13 @@ DESCRIPTION
       })))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Backend address pool of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "backend_http_settings_collection" {
-  description = <<DESCRIPTION
-Backend http settings of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -88,13 +77,13 @@ DESCRIPTION
       validate_sni                   = optional(bool)
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Backend http settings of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "backend_settings_collection" {
-  description = <<DESCRIPTION
-Backend settings of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -112,40 +101,40 @@ DESCRIPTION
       })))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Backend settings of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "custom_error_configurations" {
-  description = <<DESCRIPTION
-Custom error configurations of the application gateway resource.
-DESCRIPTION
   type = list(object({
     custom_error_page_url = optional(string)
     status_code           = optional(string)
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Custom error configurations of the application gateway resource.
+DESCRIPTION
 }
 
 variable "enable_fips" {
+  type        = bool
+  default     = null
   description = <<DESCRIPTION
 Whether FIPS is enabled on the application gateway resource.
 DESCRIPTION
-  type        = bool
-  default     = null
 }
 
 variable "enable_http2" {
+  type        = bool
+  default     = null
   description = <<DESCRIPTION
 Whether HTTP2 is enabled on the application gateway resource.
 DESCRIPTION
-  type        = bool
-  default     = null
 }
 
 variable "entra_jwt_validation_configs" {
-  description = <<DESCRIPTION
-Entra JWT validation configurations for the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -155,31 +144,31 @@ DESCRIPTION
       un_authorized_request_action = optional(string)
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Entra JWT validation configurations for the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "firewall_policy" {
-  description = <<DESCRIPTION
-Reference to another subresource.
-DESCRIPTION
   type = object({
     id = optional(string)
   })
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Reference to another subresource.
+DESCRIPTION
 }
 
 variable "force_firewall_policy_association" {
+  type        = bool
+  default     = null
   description = <<DESCRIPTION
 If true, associates a firewall policy with an application gateway regardless whether the policy differs from the WAF Config.
 DESCRIPTION
-  type        = bool
-  default     = null
 }
 
 variable "frontend_ip_configurations" {
-  description = <<DESCRIPTION
-Frontend IP addresses of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -196,26 +185,26 @@ DESCRIPTION
       }))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Frontend IP addresses of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "frontend_ports" {
-  description = <<DESCRIPTION
-Frontend ports of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
       port = optional(number)
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Frontend ports of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "gateway_ip_configurations" {
-  description = <<DESCRIPTION
-Subnets of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -224,24 +213,24 @@ DESCRIPTION
       }))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Subnets of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "global_configuration" {
-  description = <<DESCRIPTION
-Application Gateway global configuration.
-DESCRIPTION
   type = object({
     enable_request_buffering  = optional(bool)
     enable_response_buffering = optional(bool)
   })
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Application Gateway global configuration.
+DESCRIPTION
 }
 
 variable "http_listeners" {
-  description = <<DESCRIPTION
-Http listeners of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -270,13 +259,21 @@ DESCRIPTION
       }))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Http listeners of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
+}
+
+variable "id" {
+  type        = string
+  default     = null
+  description = <<DESCRIPTION
+Resource ID.
+DESCRIPTION
 }
 
 variable "listeners" {
-  description = <<DESCRIPTION
-Listeners of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -296,13 +293,13 @@ DESCRIPTION
       }))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Listeners of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "load_distribution_policies" {
-  description = <<DESCRIPTION
-Load distribution policies of the application gateway resource.
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -319,13 +316,13 @@ DESCRIPTION
       })))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Load distribution policies of the application gateway resource.
+DESCRIPTION
 }
 
 variable "private_link_configurations" {
-  description = <<DESCRIPTION
-PrivateLink configurations on application gateway.
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -343,13 +340,13 @@ DESCRIPTION
       })))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+PrivateLink configurations on application gateway.
+DESCRIPTION
 }
 
 variable "probes" {
-  description = <<DESCRIPTION
-Probes of the application gateway resource.
-DESCRIPTION
   type = list(object({
     id   = optional(string)
     name = optional(string)
@@ -371,13 +368,13 @@ DESCRIPTION
       unhealthy_threshold                       = optional(number)
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Probes of the application gateway resource.
+DESCRIPTION
 }
 
 variable "redirect_configurations" {
-  description = <<DESCRIPTION
-Redirect configurations of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -399,13 +396,13 @@ DESCRIPTION
       })))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Redirect configurations of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "request_routing_rules" {
-  description = <<DESCRIPTION
-Request routing rules of the application gateway resource.
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -437,13 +434,13 @@ DESCRIPTION
       }))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Request routing rules of the application gateway resource.
+DESCRIPTION
 }
 
 variable "rewrite_rule_sets" {
-  description = <<DESCRIPTION
-Rewrite rules for the application gateway resource.
-DESCRIPTION
   type = list(object({
     id   = optional(string)
     name = optional(string)
@@ -485,13 +482,13 @@ DESCRIPTION
       })))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Rewrite rules for the application gateway resource.
+DESCRIPTION
 }
 
 variable "routing_rules" {
-  description = <<DESCRIPTION
-Routing rules of the application gateway resource.
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -508,26 +505,26 @@ DESCRIPTION
       rule_type = optional(string)
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Routing rules of the application gateway resource.
+DESCRIPTION
 }
 
 variable "sku" {
-  description = <<DESCRIPTION
-SKU of an application gateway.
-DESCRIPTION
   type = object({
     capacity = optional(number)
     family   = optional(string)
     name     = optional(string)
     tier     = optional(string)
   })
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+SKU of an application gateway.
+DESCRIPTION
 }
 
 variable "ssl_certificates" {
-  description = <<DESCRIPTION
-SSL certificates of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -536,13 +533,13 @@ DESCRIPTION
       password            = optional(string)
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+SSL certificates of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "ssl_policy" {
-  description = <<DESCRIPTION
-Application Gateway Ssl policy.
-DESCRIPTION
   type = object({
     cipher_suites          = optional(list(string))
     disabled_ssl_protocols = optional(list(string))
@@ -550,13 +547,13 @@ DESCRIPTION
     policy_name            = optional(string)
     policy_type            = optional(string)
   })
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Application Gateway Ssl policy.
+DESCRIPTION
 }
 
 variable "ssl_profiles" {
-  description = <<DESCRIPTION
-SSL profiles of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -577,26 +574,26 @@ DESCRIPTION
       })))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+SSL profiles of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "trusted_client_certificates" {
-  description = <<DESCRIPTION
-Trusted client certificates of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
       data = optional(string)
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Trusted client certificates of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "trusted_root_certificates" {
-  description = <<DESCRIPTION
-Trusted Root certificates of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -604,13 +601,13 @@ DESCRIPTION
       key_vault_secret_id = optional(string)
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Trusted Root certificates of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "url_path_maps" {
-  description = <<DESCRIPTION
-URL path map of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
-DESCRIPTION
   type = list(object({
     name = optional(string)
     properties = optional(object({
@@ -656,13 +653,13 @@ DESCRIPTION
       })))
     }))
   }))
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+URL path map of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
+DESCRIPTION
 }
 
 variable "web_application_firewall_configuration" {
-  description = <<DESCRIPTION
-Application gateway web application firewall configuration.
-DESCRIPTION
   type = object({
     disabled_rule_groups = optional(list(object({
       rule_group_name = string
@@ -682,13 +679,16 @@ DESCRIPTION
     rule_set_type               = string
     rule_set_version            = string
   })
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+Application gateway web application firewall configuration.
+DESCRIPTION
 }
 
 variable "zones" {
+  type        = list(string)
+  default     = null
   description = <<DESCRIPTION
 A list of availability zones denoting where the resource needs to come from.
 DESCRIPTION
-  type        = list(string)
-  default     = null
 }

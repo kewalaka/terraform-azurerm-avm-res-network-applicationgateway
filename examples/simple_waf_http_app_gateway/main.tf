@@ -13,7 +13,7 @@ terraform {
   required_providers {
     azapi = {
       source  = "Azure/azapi"
-      version = "~> 2.7"
+      version = "~> 2.9"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -42,8 +42,8 @@ module "naming" {
 
 # This allows us to randomize the region for the resource group.
 module "regions" {
-  source  = "Azure/avm-utl-regions/azurerm"
-  version = "0.11.0"
+  source  = "Azure/regions/azurerm"
+  version = ">= 0.3.0"
 }
 
 # This allows us to randomize the region for the resource group.
@@ -59,6 +59,14 @@ locals {
 module "application_gateway" {
   source = "../../"
 
+  location = azurerm_resource_group.rg_group.location
+  # provide Application gateway name
+  name      = module.naming.application_gateway.name_unique
+  parent_id = azurerm_resource_group.rg_group.id
+  autoscale_configuration = {
+    min_capacity = 2
+    max_capacity = 3
+  }
   # Backend address pool configuration for the application gateway
   # Mandatory Input
   backend_address_pools = [
@@ -89,6 +97,33 @@ module "application_gateway" {
       }
     }
   ]
+  # WAF : Monitor and Log the configurations and traffic
+  diagnostic_settings = {
+    example_setting = {
+      name                           = "${module.naming.application_gateway.name_unique}-diagnostic-setting"
+      workspace_resource_id          = azurerm_log_analytics_workspace.log_analytics_workspace.id
+      log_analytics_destination_type = "Dedicated" # Or "AzureDiagnostics"
+      log_groups                     = ["allLogs"]
+      metric_categories              = ["AllMetrics"]
+    }
+  }
+  enable_telemetry = var.enable_telemetry
+  # WAF : Use Application Gateway with Web Application Firewall (WAF) in an application virtual network to safeguard inbound HTTP/S internet traffic. WAF offers centralized defense against potential exploits through OWASP core rule sets-based rules.
+  # Ensure that you have a WAF policy created before enabling WAF on the Application Gateway
+  # The use of an external WAF policy is recommended rather than using the classic WAF via the waf_configuration block.
+  firewall_policy = {
+    id = azurerm_web_application_firewall_policy.azure_waf.id
+  }
+  frontend_ip_configurations = [
+    {
+      name = "appGatewayFrontendPublicIP"
+      properties = {
+        public_ip_address = {
+          id = azurerm_public_ip.pip.id
+        }
+      }
+    }
+  ]
   # frontend port configuration block for the application gateway
   # WAF : This example NO HTTPS, We recommend to  Secure all incoming connections using HTTPS for production services with end-to-end SSL/TLS or SSL/TLS termination at the Application Gateway to protect against attacks and ensure data remains private and encrypted between the web server and browsers.
   # WAF : Please refer kv_selfssl_waf_https_app_gateway example for HTTPS configuration
@@ -97,16 +132,6 @@ module "application_gateway" {
       name = "frontend-port-80"
       properties = {
         port = 80
-      }
-    }
-  ]
-  frontend_ip_configurations = [
-    {
-      name = "appGatewayFrontendPublicIP"
-      properties = {
-        public_ip_address = {
-          id = azurerm_public_ip.pip.id
-        }
       }
     }
   ]
@@ -136,9 +161,6 @@ module "application_gateway" {
       }
     }
   ]
-  location = azurerm_resource_group.rg_group.location
-  # provide Application gateway name
-  name = module.naming.application_gateway.name_unique
   # Routing rules configuration for the backend pool
   # Mandatory Input
   request_routing_rules = [
@@ -159,31 +181,6 @@ module "application_gateway" {
       }
     }
   ]
-  parent_id = azurerm_resource_group.rg_group.id
-  # WAF : Use Application Gateway with Web Application Firewall (WAF) in an application virtual network to safeguard inbound HTTP/S internet traffic. WAF offers centralized defense against potential exploits through OWASP core rule sets-based rules.
-  # Ensure that you have a WAF policy created before enabling WAF on the Application Gateway
-  # The use of an external WAF policy is recommended rather than using the classic WAF via the waf_configuration block.
-  firewall_policy = {
-    id = azurerm_web_application_firewall_policy.azure_waf.id
-  }
-  autoscale_configuration = {
-    min_capacity = 2
-    max_capacity = 3
-  }
-  # WAF : Monitor and Log the configurations and traffic
-  diagnostic_settings = {
-    example_setting = {
-      name                           = "${module.naming.application_gateway.name_unique}-diagnostic-setting"
-      workspace_resource_id          = azurerm_log_analytics_workspace.log_analytics_workspace.id
-      log_analytics_destination_type = "Dedicated" # Or "AzureDiagnostics"
-      log_groups                     = ["allLogs"]
-      metric_categories              = ["AllMetrics"]
-    }
-  }
-  enable_telemetry = var.enable_telemetry
-  public_ip_address_configuration = {
-    public_ip_name = "${module.naming.public_ip.name_unique}-pip"
-  }
   # WAF : Azure Application Gateways v2 are always deployed in a highly available fashion with multiple instances by default. Enabling autoscale ensures the service is not reliant on manual intervention for scaling.
   sku = {
     # Accpected value for names Standard_v2 and WAF_v2

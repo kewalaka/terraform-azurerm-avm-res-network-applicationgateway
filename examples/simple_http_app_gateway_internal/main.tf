@@ -5,7 +5,7 @@ terraform {
   required_providers {
     azapi = {
       source  = "Azure/azapi"
-      version = "~> 2.7"
+      version = "~> 2.9"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -51,6 +51,14 @@ locals {
 module "application_gateway" {
   source = "../../"
 
+  location = azurerm_resource_group.rg_group.location
+  # provide Application gateway name
+  name      = module.naming.application_gateway.name_unique
+  parent_id = azurerm_resource_group.rg_group.id
+  autoscale_configuration = {
+    min_capacity = 2
+    max_capacity = 15
+  }
   # Backend address pool configuration for the application gateway
   # Mandatory Input
   backend_address_pools = [
@@ -72,16 +80,7 @@ module "application_gateway" {
       }
     }
   ]
-  # WAF : This example NO HTTPS, We recommend to  Secure all incoming connections using HTTPS for production services with end-to-end SSL/TLS or SSL/TLS termination at the Application Gateway to protect against attacks and ensure data remains private and encrypted between the web server and browsers.
-  # WAF : Please refer kv_selfssl_waf_https_app_gateway example for HTTPS configuration
-  frontend_ports = [
-    {
-      name = "frontend-port-80"
-      properties = {
-        port = 80
-      }
-    }
-  ]
+  enable_telemetry = var.enable_telemetry
   frontend_ip_configurations = [
     {
       name = "appGatewayFrontendPublicIP"
@@ -99,6 +98,16 @@ module "application_gateway" {
         subnet = {
           id = azurerm_subnet.backend.id
         }
+      }
+    }
+  ]
+  # WAF : This example NO HTTPS, We recommend to  Secure all incoming connections using HTTPS for production services with end-to-end SSL/TLS or SSL/TLS termination at the Application Gateway to protect against attacks and ensure data remains private and encrypted between the web server and browsers.
+  # WAF : Please refer kv_selfssl_waf_https_app_gateway example for HTTPS configuration
+  frontend_ports = [
+    {
+      name = "frontend-port-80"
+      properties = {
+        port = 80
       }
     }
   ]
@@ -128,9 +137,10 @@ module "application_gateway" {
       }
     }
   ]
-  location = azurerm_resource_group.rg_group.location
-  # provide Application gateway name
-  name = module.naming.application_gateway.name_unique
+  lock = {
+    name = "lock-${module.naming.application_gateway.name_unique}"
+    kind = "CanNotDelete"
+  }
   # Routing rules configuration for the backend pool
   # Mandatory Input
   request_routing_rules = [
@@ -151,16 +161,6 @@ module "application_gateway" {
       }
     }
   ]
-  parent_id = azurerm_resource_group.rg_group.id
-  autoscale_configuration = {
-    min_capacity = 2
-    max_capacity = 15
-  }
-  enable_telemetry = var.enable_telemetry
-  lock = {
-    name = "lock-${module.naming.application_gateway.name_unique}"
-    kind = "CanNotDelete"
-  }
   # WAF : Azure Application Gateways v2 are always deployed in a highly available fashion with multiple instances by default. Enabling autoscale ensures the service is not reliant on manual intervention for scaling.
   sku = {
     # Accpected value for names Standard_v2 and WAF_v2
