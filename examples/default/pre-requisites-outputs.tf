@@ -63,3 +63,8 @@ output "workload_subnet_name" {
   description = "Name of the Workload Subnet"
   value       = azurerm_subnet.workload.name
 }
+
+output "public_ip_id" {
+  description = "ID of the Public IP"
+  value       = azurerm_public_ip.pip.id
+}
