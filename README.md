@@ -498,14 +498,6 @@ list(object({
 
 Default: `null`
 
-### <a name="input_id"></a> [id](#input\_id)
-
-Description: Resource ID.
-
-Type: `string`
-
-Default: `null`
-
 ### <a name="input_listeners"></a> [listeners](#input\_listeners)
 
 Description: Listeners of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).
@@ -632,6 +624,7 @@ map(object({
       condition                              = optional(string, null)
       condition_version                      = optional(string, null)
       delegated_managed_identity_resource_id = optional(string, null)
+      principal_type                         = optional(string, null)
     })), {})
     lock = optional(object({
       kind = string
@@ -654,14 +647,6 @@ map(object({
 ```
 
 Default: `{}`
-
-### <a name="input_private_endpoints_manage_dns_zone_group"></a> [private\_endpoints\_manage\_dns\_zone\_group](#input\_private\_endpoints\_manage\_dns\_zone\_group)
-
-Description: Whether to manage private DNS zone groups with this module. If set to false, you must manage private DNS zone groups externally, e.g. using Azure Policy.
-
-Type: `bool`
-
-Default: `true`
 
 ### <a name="input_private_link_configurations"></a> [private\_link\_configurations](#input\_private\_link\_configurations)
 

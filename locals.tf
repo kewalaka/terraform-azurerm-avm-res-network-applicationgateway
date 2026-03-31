@@ -18,7 +18,6 @@ locals {
       }
     } : {}
   }
-  private_endpoints = { for k, v in var.private_endpoints : k => v }
   resource_body = {
     properties = {
       authenticationCertificates = var.authentication_certificates == null ? null : [for item in var.authentication_certificates : item == null ? null : {

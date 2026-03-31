@@ -265,14 +265,6 @@ Http listeners of the application gateway resource. For default limits, see [App
 DESCRIPTION
 }
 
-variable "id" {
-  type        = string
-  default     = null
-  description = <<DESCRIPTION
-Resource ID.
-DESCRIPTION
-}
-
 variable "listeners" {
   type = list(object({
     name = optional(string)
