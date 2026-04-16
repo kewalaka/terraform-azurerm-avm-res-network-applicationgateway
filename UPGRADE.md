@@ -10,9 +10,6 @@ diagnostic settings.
 
 ## Breaking changes summary
 
-- **Provider**: the main resource is now `azapi_resource` (type
-  `Microsoft.Network/applicationGateways@2025-03-01`) instead of
-  `azurerm_application_gateway`.
 - **`resource_group_name` removed**: replaced by `parent_id`, which
   takes the full ARM resource ID of the parent resource group.
 - **Variable shape**: variables changed from `map(object)` with flat

@@ -33,6 +33,11 @@ resource "azapi_resource" "this" {
   }
 }
 
+moved {
+  from = azurerm_application_gateway.this
+  to   = azapi_resource.this
+}
+
 resource "azurerm_management_lock" "this" {
   count = var.lock != null ? 1 : 0
 
